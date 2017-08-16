@@ -16,9 +16,8 @@ for line in proc.stdout.readlines():
 
 pipes = dict(stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-song = dirlisting[randint(0, len(dirlisting))]
-
 while True:
+    song = dirlisting[randint(0, len(dirlisting))]
     print(song)
     mplayer = Popen(["mplayer", song.rstrip()], **pipes)
     mplayer.communicate(input=b">")
