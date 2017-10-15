@@ -32,20 +32,25 @@ for line in proc.stdout.readlines():
 
 pipes = dict(stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-while True:
-    song = dirlisting[randint(0, len(dirlisting)-1)]
-    print(song)
-    #mplayer = Popen(["mplayer", song.rstrip()], **pipes)
-    #mplayer.communicate(input=b">")
-    player = vlc.MediaPlayer(song.rstrip())
-    player.play()
-    time.sleep(2)
-    while player.is_playing():
-        try:
-            c = sys.stdin.read(1)
-            print "Got character", repr(c)
-            if c == 'q':
-                termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
-                fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
-                sys.exit()
-        except IOError: pass
+try:
+    while True:
+        song = dirlisting[randint(0, len(dirlisting)-1)]
+        print(song)
+        #mplayer = Popen(["mplayer", song.rstrip()], **pipes)
+        #mplayer.communicate(input=b">")
+        player = vlc.MediaPlayer(song.rstrip())
+        player.play()
+        time.sleep(2)
+        while player.is_playing():
+            try:
+                c = sys.stdin.read(1)
+                print "Got character", repr(c)
+                if c == 'q':
+                    termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
+                    fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
+                    sys.exit()
+            except IOError: pass
+except KeyboardInterrupt:
+    termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
+    fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
+
