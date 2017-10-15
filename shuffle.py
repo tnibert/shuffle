@@ -6,6 +6,8 @@ import vlc
 import time
 import termios, fcntl, os
 
+DEBUG = False
+
 # set up keyboard input
 fd = sys.stdin.fileno()
 
@@ -46,8 +48,9 @@ try:
         while player.is_playing() or paused:
             try:
                 c = sys.stdin.read(1)
-                print "Got character", repr(c)
+                if DEBUG: print("Got character", repr(c))
                 if c == 'q':
+                    print("Exiting")
                     termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
                     fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
                     sys.exit()
@@ -56,10 +59,18 @@ try:
                 elif c == ' ':
                     player.pause()
                     paused = not paused
+                    if paused: print("PAUSED")
                     time.sleep(1)
+                elif c == 'A':
+                    newvol = player.audio_get_volume() + 2
+                    print("Volume: {}%".format(newvol))
+                    if newvol <= 98: player.audio_set_volume(newvol)
+                elif c == 'B':
+                    newvol = player.audio_get_volume() - 2
+                    print("Volume: {}%".format(newvol))
+                    if newvol >= 2: player.audio_set_volume(newvol)
 
             except IOError: pass
-except KeyboardInterrupt:
+except:         # this masks exceptions but will restore our terminal :\
     termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
     fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
-
