@@ -32,6 +32,8 @@ for line in proc.stdout.readlines():
 
 pipes = dict(stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
+paused = False
+
 try:
     while True:
         song = dirlisting[randint(0, len(dirlisting)-1)]
@@ -41,7 +43,7 @@ try:
         player = vlc.MediaPlayer(song.rstrip())
         player.play()
         time.sleep(2)
-        while player.is_playing():
+        while player.is_playing() or paused:
             try:
                 c = sys.stdin.read(1)
                 print "Got character", repr(c)
@@ -49,6 +51,13 @@ try:
                     termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
                     fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
                     sys.exit()
+                elif c == 'C':
+                    player.stop()
+                elif c == ' ':
+                    player.pause()
+                    paused = not paused
+                    time.sleep(1)
+
             except IOError: pass
 except KeyboardInterrupt:
     termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
