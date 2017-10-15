@@ -44,4 +44,8 @@ while True:
         try:
             c = sys.stdin.read(1)
             print "Got character", repr(c)
+            if c == 'q':
+                termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
+                fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
+                sys.exit()
         except IOError: pass
