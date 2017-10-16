@@ -39,12 +39,20 @@ paused = False
 try:
     while True:
         song = dirlisting[randint(0, len(dirlisting)-1)]
-        print(song)
+        print(song.rstrip())
         #mplayer = Popen(["mplayer", song.rstrip()], **pipes)
         #mplayer.communicate(input=b">")
         player = vlc.MediaPlayer(song.rstrip())
+        time.sleep(1)
         player.play()
         time.sleep(2)
+        current_len = player.get_length()
+        print(player.get_length())
+        if current_len == 0:
+            print("reverting to mplayer")
+            mplayer = Popen(["mplayer", song.rstrip()], **pipes)
+            mplayer.communicate(input=b">")
+
         while player.is_playing() or paused:
             try:
                 c = sys.stdin.read(1)
