@@ -32,7 +32,7 @@ for line in proc.stdout.readlines():
 
 #print(dirlisting[0])
 
-pipes = dict(stdin=PIPE, stdout=PIPE, stderr=PIPE)
+#pipes = dict(stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
 paused = False
 
@@ -42,6 +42,10 @@ try:
         print(song.rstrip())
         #mplayer = Popen(["mplayer", song.rstrip()], **pipes)
         #mplayer.communicate(input=b">")
+
+        mplayer = True              # does not mean mplayer is running
+                                    # means that we won't sleep a few lines down
+                                    # if we don't use it
         player = vlc.MediaPlayer(song.rstrip())
         time.sleep(1)
         player.play()
@@ -50,8 +54,10 @@ try:
         print(player.get_length())
         if current_len == 0:
             print("reverting to mplayer")
-            mplayer = Popen(["mplayer", song.rstrip()], **pipes)
+            mplayer = Popen(["mplayer", song.rstrip()])
             mplayer.communicate(input=b">")
+
+        while(not mplayer): sleep(1)
 
         while player.is_playing() or paused:
             try:
