@@ -8,6 +8,8 @@ import termios, fcntl, os
 
 DEBUG = False
 
+ENGINE = "mplayer"
+
 # set up keyboard input
 fd = sys.stdin.fileno()
 
@@ -47,12 +49,14 @@ try:
                                     # means that we won't sleep a few lines down
                                     # if we don't use it
         player = vlc.MediaPlayer(song.rstrip())
-        time.sleep(1)
-        player.play()
-        time.sleep(2)
-        current_len = player.get_length()
-        print(player.get_length())
-        if current_len == 0:
+        current_len = 0
+        if ENGINE != "mplayer":
+            time.sleep(1)
+            player.play()
+            time.sleep(2)
+            current_len = player.get_length()
+            print(player.get_length())
+        if current_len == 0 or ENGINE == "mplayer":
             print("reverting to mplayer")
             mplayer = Popen(["mplayer", song.rstrip()])
             mplayer.communicate(input=b">")
